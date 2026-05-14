@@ -1,0 +1,67 @@
+package com.example.lab5
+
+import android.graphics.Color
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColorInt
+import com.example.lab5.databinding.ActivityMainBinding
+import java.util.Locale
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        savedInstanceState?.getString("ZAPISANY_WYNIK")?.let {
+            binding.result.text = it
+        }
+
+        binding.btnSubmit.setOnClickListener {
+            val weightStr = binding.weight.text.toString()
+            val heightStr = binding.height.text.toString()
+
+            if (weightStr.isNotEmpty() && heightStr.isNotEmpty()) {
+                val weight = weightStr.toFloat()
+                val height = heightStr.toFloat() / 100
+                val bmi = weight / (height * height)
+
+
+                binding.result.text = String.format(Locale.US, "Twoje BMI: %.2f", bmi)
+
+
+                when {
+                    bmi < 16.0f -> {
+                        binding.result.setTextColor("#F44336".toColorInt())
+                    }
+                    bmi < 18.5f -> {
+                        binding.result.setTextColor("#FFA000".toColorInt())
+                    }
+                    bmi < 25.0f -> {
+                        binding.result.setTextColor("#4CAF50".toColorInt())
+                    }
+                    bmi < 30.0f -> {
+                        binding.result.setTextColor("#FFA000".toColorInt())
+                    }
+                    else -> {
+                        binding.result.setTextColor("#F44336".toColorInt())
+                    }
+                }
+
+            } else {
+
+                binding.result.text = getString(R.string.error_invalid_data)
+                binding.result.setTextColor(Color.RED)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("ZAPISANY_WYNIK", binding.result.text.toString())
+    }
+}
